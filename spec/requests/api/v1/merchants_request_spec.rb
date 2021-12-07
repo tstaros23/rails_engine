@@ -23,7 +23,7 @@ require 'rails_helper'
    it "can send one merchant" do
      merchant = create(:merchant)
 
-     get "/api/vi/merchants/#{merchant.id}"
+     get "/api/v1/merchants/#{merchant.id}"
 
      expect(response).to be_successful
      expect(response.status).to eq(200)
