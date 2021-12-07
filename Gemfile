@@ -38,6 +38,7 @@ group :development, :test do
   gem 'faker'
   gem 'fast_jsonapi'
   gem 'pry'
+  gem 'shoulda-matchers', '~> 3.1'
 end
 
 group :development do
