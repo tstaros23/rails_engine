@@ -18,15 +18,15 @@ require 'rails_helper'
    end
 
    it "sad path" do
-     merchant = create_list(:merchant, 5)
+     merchants = create_list(:merchant, 5)
      get '/api/v1/merchants/find/', params: { name: 'NOMATCH'}
 
      expect(response).to be_successful
      expect(response.status).to eq(200)
 
-    merchant = JSON.parse(response.body, symbolize_names: true)
+    merchants = JSON.parse(response.body, symbolize_names: true)
 
-    expect(merchant).to have_key(:data)
-    expect(merchant[:data]).to be_empty
+    expect(merchants).to have_key(:data)
+    expect(merchants[:data]).to be_empty
    end
  end
