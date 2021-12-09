@@ -9,7 +9,7 @@ Rails.application.routes.draw do
           get '/find_all', to: 'search#index'
         end
         resources :merchants, only: [:index, :show]
-        resources :items, only: [:update]
+        resources :items, only: [:create, :update]
     end
   end
 end
