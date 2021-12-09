@@ -23,6 +23,8 @@ require 'rails_helper'
      expect(item_data[:data]).to have_key(:type)
      expect(item_data[:data]).to have_key(:attributes)
      expect(item_data[:data][:attributes]).to have_key(:name)
+     expect(item_data[:data][:attributes]).to have_key(:description)
+     expect(item_data[:data][:attributes]).to have_key(:unit_price)
    end
 
    it "can create a new Item" do
@@ -74,5 +76,30 @@ require 'rails_helper'
      expect(item[:data]).to have_key(:type)
      expect(item[:data]).to have_key(:attributes)
      expect(item[:data][:attributes]).to have_key(:name)
+     expect(item[:data][:attributes]).to have_key(:description)
+     expect(item[:data][:attributes]).to have_key(:unit_price)
+   end
+
+   it "can send all items" do
+     merchant = create(:merchant)
+     create_list(:item, 3, merchant: merchant)
+
+     get "/api/v1/items"
+
+     expect(response).to be_successful
+     expect(response.status).to eq(200)
+
+     items = JSON.parse(response.body, symbolize_names: true)
+
+     expect(items[:data].count).to eq(3)
+
+     items[:data].each do |item|
+       expect(item).to have_key(:id)
+       expect(item).to have_key(:type)
+       expect(item).to have_key(:attributes)
+       expect(item[:attributes]).to have_key(:name)
+       expect(item[:attributes]).to have_key(:description)
+       expect(item[:attributes]).to have_key(:unit_price)
+     end
    end
  end

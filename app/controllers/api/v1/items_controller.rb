@@ -1,4 +1,8 @@
 class Api::V1::ItemsController < ApplicationController
+  def index
+    render json: ItemSerializer.new(Item.all)
+  end
+
   def show
     if Item.exists?(params[:id])
       item = Item.find(params[:id])
@@ -8,6 +12,7 @@ class Api::V1::ItemsController < ApplicationController
     end
 
   end
+
   def create
     created_item = Item.create(item_params)
     render json: ItemSerializer.new(created_item), status: :created
