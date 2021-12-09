@@ -52,7 +52,7 @@ require 'rails_helper'
      expect(Item.count).to eq(1)
      expect{delete "/api/v1/items/#{item.id}"}.to change(Item, :count).by(-1)
 
-     delete "/api/v1/items/#{item.id}"
+
      expect(Item.count).to eq(0)
      expect(response.status).to eq(204)
 
