@@ -42,4 +42,20 @@ require 'rails_helper'
      expect(item_data[:data]).to have_key(:attributes)
      expect(item_data[:data][:attributes]).to have_key(:name)
    end
+
+   it "can destroy an Item" do
+     merchant = create(:merchant)
+     item = create(:item, merchant: merchant)
+
+     expect(Item.count).to eq(1)
+     expect{delete "/api/v1/items/#{item.id}"}.to change(Item, :count).by(-1)
+
+     delete "/api/v1/items/#{item.id}"
+     expect(Item.count).to eq(0)
+     expect(response.status).to eq(204)
+
+
+     expect(response).to be_success
+     expect{Item.find(item.id)}.to raise_error(ActiveRecord::RecordNotFound)
+   end
  end
