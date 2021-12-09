@@ -1,4 +1,13 @@
 class Api::V1::ItemsController < ApplicationController
+  def show
+    if Item.exists?(params[:id])
+      item = Item.find(params[:id])
+      render json: ItemSerializer.new(item)
+    else
+      render json: {errors: {details: "item doesnt exist"}}, status: 404
+    end
+
+  end
   def create
     created_item = Item.create(item_params)
     render json: ItemSerializer.new(created_item), status: :created

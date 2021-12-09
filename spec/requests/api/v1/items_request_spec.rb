@@ -58,4 +58,21 @@ require 'rails_helper'
      expect(response).to be_success
      expect{Item.find(item.id)}.to raise_error(ActiveRecord::RecordNotFound)
    end
+
+   it "can send one item" do
+     merchant = create(:merchant)
+     item = create(:item, merchant: merchant)
+
+     get "/api/v1/items/#{item.id}"
+
+     expect(response).to be_successful
+     expect(response.status).to eq(200)
+
+     item = JSON.parse(response.body, symbolize_names: true)
+
+     expect(item[:data]).to have_key(:id)
+     expect(item[:data]).to have_key(:type)
+     expect(item[:data]).to have_key(:attributes)
+     expect(item[:data][:attributes]).to have_key(:name)
+   end
  end
