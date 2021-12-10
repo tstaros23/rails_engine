@@ -1,4 +1,5 @@
 class Api::V1::ItemsController < ApplicationController
+
   def index
     render json: ItemSerializer.new(Item.all)
   end
@@ -36,8 +37,7 @@ class Api::V1::ItemsController < ApplicationController
   def destroy
     if Item.exists?(params[:id])
       item = Item.find(params[:id])
-      deleted_item = item.destroy
-      render json: ItemSerializer.new(deleted_item), status: :no_content
+      item.destroy
     else
       render json: {errors: {details: "item doesnt exist"}}, status: :not_found
     end
