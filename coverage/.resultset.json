@@ -237,9 +237,9 @@
         "lines": [
           1,
           1,
-          20,
-          23,
-          23,
+          21,
+          24,
+          24,
           null,
           null
         ]
@@ -248,7 +248,7 @@
         "lines": [
           1,
           1,
-          21,
+          22,
           null,
           null
         ]
@@ -265,6 +265,7 @@
           1,
           1,
           null,
+          1,
           1,
           1,
           1,
@@ -354,23 +355,6 @@
           null,
           1,
           null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
           null
         ]
       },
@@ -412,7 +396,6 @@
           1,
           1,
           1,
-          null,
           null,
           1,
           null,
@@ -595,6 +578,22 @@
           3,
           null,
           null,
+          1,
+          1,
+          1,
+          null,
+          1,
+          null,
+          1,
+          1,
+          null,
+          1,
+          null,
+          1,
+          1,
+          1,
+          1,
+          null,
           null
         ]
       },
@@ -703,6 +702,7 @@
           1,
           2,
           2,
+          2,
           null,
           null
         ]
@@ -775,13 +775,17 @@
           null
         ]
       },
-      "/Users/theodorestaros/turing/mod3/projects/rails-engine/app/controllers/api/v1/merchants/search_controller.rb": {
+      "/Users/theodorestaros/turing/mod3/projects/rails-engine/app/controllers/api/v1/items_merchant_controller.rb": {
         "lines": [
           1,
           1,
-          2,
-          2,
           1,
+          1,
+          1,
+          1,
+          null,
+          0,
+          null,
           null,
           null
         ]
@@ -791,6 +795,17 @@
           1,
           1,
           1,
+          null
+        ]
+      },
+      "/Users/theodorestaros/turing/mod3/projects/rails-engine/app/controllers/api/v1/merchants/search_controller.rb": {
+        "lines": [
+          1,
+          1,
+          2,
+          2,
+          1,
+          null,
           null
         ]
       },
@@ -830,6 +845,6 @@
         ]
       }
     },
-    "timestamp": 1639102094
+    "timestamp": 1639111046
   }
 }
