@@ -13,7 +13,6 @@ describe Merchant do
     merchant = create(:merchant)
     merchant2 = create(:merchant, name: 'Hardware Store')
 
-
     expect(Merchant.search_for_names('Hardware')).to eq(merchant2)
   end
 end
