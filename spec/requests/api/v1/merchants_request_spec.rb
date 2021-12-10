@@ -34,4 +34,26 @@ require 'rails_helper'
      expect(merchant[:data]).to have_key(:attributes)
      expect(merchant[:data][:attributes]).to have_key(:name)
    end
+
+   it "can send the merchant items" do
+     merchant = create(:merchant)
+     items = create_list(:item, 3, merchant: merchant)
+     get "/api/v1/merchants/#{merchant.id}/items"
+
+     expect(response).to be_successful
+     expect(response.status).to eq(200)
+
+     merchant_items = JSON.parse(response.body, symbolize_names: true)
+
+     expect(merchant_items[:data].count).to eq(3)
+
+     merchant_items[:data].each do |item|
+       expect(item).to have_key(:id)
+       expect(item).to have_key(:type)
+       expect(item).to have_key(:attributes)
+       expect(item[:attributes]).to have_key(:name)
+       expect(item[:attributes]).to have_key(:description)
+       expect(item[:attributes]).to have_key(:unit_price)
+     end
+   end
  end

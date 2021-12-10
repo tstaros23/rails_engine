@@ -8,7 +8,7 @@ class Api::V1::ItemsController < ApplicationController
       item = Item.find(params[:id])
       render json: ItemSerializer.new(item)
     else
-      render json: {errors: {details: "item doesnt exist"}}, status: 404
+      render json: {errors: {details: "item doesnt exist"}}, status: :not_found
     end
 
   end
@@ -19,13 +19,28 @@ class Api::V1::ItemsController < ApplicationController
   end
 
   def update
-    item = Item.find(params[:id])
-    updated_item = Item.update(item.id, item_params)
-    render json: ItemSerializer.new(updated_item)
+      item = Item.find(params[:id])
+      if !item.nil? && !params[:merchant_id].present?
+      updated_item = Item.update(item.id, item_params)
+      render json: ItemSerializer.new(updated_item)
+    elsif params[:merchant_id].present?
+      merchant = Merchant.find(params[:merchant_id])
+      updated_item = Item.update(item.id, item_params)
+      return  render json: {errors: {details: "merchant doesnt exist"}}, status: :not_found if merchant.nil?
+      render json: ItemSerializer.new(updated_item)
+    else
+      render json: {errors: {details: "item doesnt exist"}}, status: :not_found
+    end
   end
 
   def destroy
-    Item.delete(params[:id])
+    if Item.exists?(params[:id])
+      item = Item.find(params[:id])
+      deleted_item = item.destroy
+      render json: ItemSerializer.new(deleted_item), status: :no_content
+    else
+      render json: {errors: {details: "item doesnt exist"}}, status: :not_found
+    end
   end
 
   private
