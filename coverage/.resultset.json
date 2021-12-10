@@ -238,7 +238,6 @@
           null,
           1,
           1,
-          null,
           1,
           null,
           null,
@@ -671,7 +670,7 @@
         "lines": [
           1,
           1,
-          2,
+          1,
           null,
           null,
           1,
@@ -693,6 +692,15 @@
           1,
           1,
           1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          null,
+          0,
+          null,
           null,
           null,
           1,
@@ -749,8 +757,24 @@
           null,
           null
         ]
+      },
+      "/Users/theodorestaros/turing/mod3/projects/rails-engine/app/controllers/api/v1/merchant_items_controller.rb": {
+        "lines": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          null,
+          null,
+          1,
+          1,
+          0,
+          null,
+          null
+        ]
       }
     },
-    "timestamp": 1639089492
+    "timestamp": 1639094294
   }
 }
