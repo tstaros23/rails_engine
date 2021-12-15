@@ -8,4 +8,8 @@ class Merchant < ApplicationRecord
   def self.search_for_names(search)
     where('LOWER(name) LIKE ?', "%#{search.downcase}%").first
   end
+
+  def self.most_items(quantity)
+    Merchant.joins(:items, invoices: [:invoice_items, :transactions]).where(transactions: {result: :success}).group(:id).select("merchants.*, count('invoice_items.id*') as count").order('count DESC').distinct.limit(quantity)
+  end
 end
