@@ -1,30 +1,147 @@
-# Use the latest 2.1 version of CircleCI pipeline process engine.
-# See: https://circleci.com/docs/2.0/configuration-reference
 version: 2.1
 
-# Orbs are reusable packages of CircleCI configuration that you may share across projects, enabling you to create encapsulated, parameterized commands, jobs, and executors that can be used across multiple projects.
-# See: https://circleci.com/docs/2.0/orb-intro/
 orbs:
-  ruby: circleci/ruby@1.4.0
+  ruby: circleci/ruby@0.1.2
 
-# Define a job to be invoked later in a workflow.
-# See: https://circleci.com/docs/2.0/configuration-reference/#jobs
+references:
+  default_ruby_version: &default_ruby_version 2.7.2-stretch-node
+  default_postgress_version: &default_postgress_version 14-alpine
+  ruby_envs: &ruby_envs
+    environment:
+      BUNDLE_JOBS: 3
+      BUNDLE_RETRY: 3
+      BUNDLE_PATH: vendor/bundle
+      PGHOST: 127.0.0.1
+      PGUSER: circleci-demo-ruby
+      PGPASSWORD: ""
+      RAILS_ENV: test
+  postgres_envs: &postgres_envs
+    environment:
+      POSTGRES_USER: circleci-demo-ruby
+      POSTGRES_DB: verso-commerce-test2
+      POSTGRES_PASSWORD: ""
+
+executors:
+  default:
+    parameters:
+      ruby_tag:
+        description: "The `circleci/ruby` Docker image version tag."
+        type: string
+        default: *default_ruby_version
+    docker:
+      - image: circleci/ruby:<< parameters.ruby_tag >>
+        <<: *ruby_envs
+  ruby_with_postgres:
+    parameters:
+      ruby_tag:
+        description: "The `circleci/postgres` Docker image version tag."
+        type: string
+        default: *default_ruby_version
+      postgres_tag:
+        description: "The `circleci/postgres` Docker image version tag."
+        type: string
+        default: *default_postgress_version
+    docker:
+      - image: circleci/ruby:<< parameters.ruby_tag >>
+        <<: *ruby_envs
+      - image: circleci/postgres:<< parameters.postgres_tag >>
+        <<: *postgres_envs
+
+commands:
+
+  yarn-install:
+    description: "Install node_modules in your build."
+    parameters:
+      cache-folder-path:
+        description: "The path of cache-folder"
+        type: string
+        default: "~/.cache/yarn"
+    steps:
+      - run:
+          name: Yarn Install
+          command: yarn install --cache-folder << parameters.cache-folder-path >>
+  yarn-load-cache:
+    description: "Load node_modules cached"
+    parameters:
+      key:
+        description: "The cache key to use. The key is immutable."
+        type: string
+        default: "rails-demo-yarn-v1"
+    steps:
+      - restore_cache:
+          keys:
+            - << parameters.key >>-{{ checksum "yarn.lock"  }}
+  yarn-save-cache:
+    description: "Save node_modules to cache."
+    parameters:
+      key:
+        description: "The cache key to use. The key is immutable."
+        type: string
+        default: "rails-demo-yarn-v1"
+    steps:
+      - save_cache:
+          key: << parameters.key >>-{{ checksum "yarn.lock"  }}
+          paths:
+            - ~/.cache/yarn
+
 jobs:
   build:
-    docker:
-      - image: cimg/ruby:3.1.0
-    executor: ruby/default
+    executor: default
     steps:
+      - run:
+          name: Force Bundler Version
+          command: |
+            sudo gem update --system
+            echo 'export BUNDLER_VERSION=$(cat Gemfile.lock | tail -1 | tr -d " ")' >> $BASH_ENV
+            source $BASH_ENV
+            gem install bundler
+
       - checkout
+      # Which version of bundler?
       - run:
           name: Which bundler?
           command: bundle -v
+      - ruby/load-cache:
+          key: rails-demo-bundle
       - ruby/bundle-install
+      - ruby/save-cache:
+          key: rails-demo-bundle
+      # restore, install and save node_packages
+      - yarn-load-cache
+      - yarn-install
+      - yarn-save-cache
+  test:
+    parallelism: 1
+    executor: ruby_with_postgres
+    steps:
+      - checkout
+      - run:
+          name: Force Bundler Version
+          command: |
+            sudo gem update --system
+            echo 'export BUNDLER_VERSION=$(cat Gemfile.lock | tail -1 | tr -d " ")' >> $BASH_ENV
+            source $BASH_ENV
+            gem install bundler
+      - ruby/load-cache:
+          key: rails-demo-bundle
+      - ruby/bundle-install
+      - yarn-load-cache
+      # Check DB status
+      - run:
+          name: Wait for DB
+          command: dockerize -wait tcp://localhost:5432 -timeout 1m
+      # Setup database
+      - run:
+          name: Database setup
+          command: bundle exec rails db:schema:load --trace
+      # Run rspec in parallel
+      - ruby/test
 
-# Invoke jobs via workflows
-# See: https://circleci.com/docs/2.0/configuration-reference/#workflows
 workflows:
-  sample: # This is the name of the workflow, feel free to change it to better match your workflow.
-    # Inside the workflow, you define the jobs you want to run.
+  version: 2
+  build_and_test:
     jobs:
       - build
+      - test:
+          requires:
+            - build
