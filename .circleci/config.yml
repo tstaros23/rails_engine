@@ -140,6 +140,7 @@ jobs:
 workflows:
   version: 2
   build_and_test:
+    - rspec/test
     jobs:
       - build
       - test:
