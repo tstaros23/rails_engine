@@ -99,6 +99,14 @@ jobs:
       - run:
           name: Database setup
           command: bundle exec rails db:schema:load --trace
+      - run:
+      name: Run rspec in parallel
+      command: |
+        bundle exec rspec --profile 10 \
+                          --format RspecJunitFormatter \
+                          --out test_results/rspec.xml \
+                          --format progress \
+                          $(circleci tests glob "spec/**/*_spec.rb" | circleci tests split --split-by=timings)
       # Run rspec in parallel
       - ruby/rspec-test
 
