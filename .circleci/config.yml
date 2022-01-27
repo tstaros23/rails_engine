@@ -15,13 +15,29 @@ jobs:
         #   password: $DOCKERHUB_PASSWORD  # context / project UI env-var reference
     steps:
       - checkout # pull down our git code.
-      - ruby/install-deps # use the ruby orb to install dependencies
-      # use the node orb to install our packages
-      # specifying that we use `yarn` and to cache dependencies with `yarn.lock`
-      # learn more: https://circleci.com/docs/2.0/caching/
-      - node/install-packages:
-          pkg-manager: yarn
-          cache-key: "yarn.lock"
+      - run:
+          name: Force Bundler Version
+          command: |
+            echo 'export BUNDLER_VERSION=$(cat Gemfile.lock | tail -1 | tr -d " ")' >> $BASH_ENV
+            source $BASH_ENV
+            gem install bundler
+      - run:
+          name: Which bundler?
+          command: bundle -v
+      # Restore bundle cache
+      # Read about caching dependencies: https://circleci.com/docs/2.0/caching/
+      - restore_cache:
+          keys:
+            - fast-inlet-74665-bundle-v2-{{ checksum "Gemfile.lock" }}
+            - fast-inlet-74665-bundle-v2-
+      - run: # Install Ruby dependencies
+          name: Bundle Install
+          command: bundle install
+      # Store bundle cache for Ruby dependencies
+      - save_cache:
+          key: fast-inlet-74665-bundle-v2-{{ checksum "Gemfile.lock" }}
+          paths:
+            - vendor/bundle
 
   test:  # our next job, called "test"
     # we run "parallel job containers" to enable speeding up our tests;
@@ -52,10 +68,29 @@ jobs:
     # A series of steps to run, some are similar to those in "build".
     steps:
       - checkout
-      - ruby/install-deps
-      - node/install-packages:
-          pkg-manager: yarn
-          cache-key: "yarn.lock"
+      - run:
+          name: Force Bundler Version
+          command: |
+            echo 'export BUNDLER_VERSION=$(cat Gemfile.lock | tail -1 | tr -d " ")' >> $BASH_ENV
+            source $BASH_ENV
+            gem install bundler
+      - run:
+          name: Which bundler?
+          command: bundle -v
+      # Restore bundle cache
+      # Read about caching dependencies: https://circleci.com/docs/2.0/caching/
+      - restore_cache:
+          keys:
+            - fast-inlet-74665-bundle-v2-{{ checksum "Gemfile.lock" }}
+            - fast-inlet-74665-bundle-v2-
+      - run: # Install Ruby dependencies
+          name: Bundle Install
+          command: bundle install
+      # Store bundle cache for Ruby dependencies
+      - save_cache:
+          key: fast-inlet-74665-bundle-v2-{{ checksum "Gemfile.lock" }}
+          paths:
+            - vendor/bundle
       # Here we make sure that the secondary container boots
       # up before we run operations on the database.
       - run:
