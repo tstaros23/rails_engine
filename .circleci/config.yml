@@ -108,7 +108,8 @@ jobs:
                               --format progress \
                               $(circleci tests glob "spec/**/*_spec.rb" | circleci tests split --split-by=timings)
       # Run rspec in parallel
-      - ruby/rspec-test
+      - store_test_results: # Upload test results for display in Test Summary: https://circleci.com/docs/2.0/collect-test-data/
+        path: test_results
 
 # We use workflows to orchestrate the jobs that we declared above.
 workflows:
