@@ -39,6 +39,7 @@ group :development, :test do
   gem 'fast_jsonapi'
   gem 'pry'
   gem 'shoulda-matchers', '~> 3.1'
+  gem 'rspec_junit_formatter'
 end
 
 group :development do

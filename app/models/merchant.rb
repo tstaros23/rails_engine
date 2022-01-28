@@ -9,12 +9,12 @@ class Merchant < ApplicationRecord
     where('LOWER(name) LIKE ?', "%#{search.downcase}%").first
   end
 
-  def self.most_items(quantity)
-    Merchant.joins(items: [{invoices: :transactions}])
-    .where(transactions: {result: 'success'})
-    .group(:id)
-    .select("merchants.*, sum(invoice_items.quantity) as count")
-    .order('count DESC')
-    .limit(quantity)
-  end
+  # def self.most_items(quantity)
+  #   Merchant.joins(items: [{invoices: :transactions}])
+  #   .where(transactions: {result: 'success'})
+  #   .group(:id)
+  #   .select("merchants.*, sum(invoice_items.quantity) as count")
+  #   .order('count DESC')
+  #   .limit(quantity)
+  # end
 end
